@@ -35,6 +35,7 @@ var $output = $("#placeOutput"),
   $regularTasks = $('#placeTasks'),
   $aliasTasks = $('#placeAliasTasks'),
   $projects = $('#placeProjects'),
+  $settings = $('#settings'),
   $warning = $('#updateWarning');
 
 /**
@@ -126,7 +127,9 @@ function colorize(msg) {
 /**
  * Connect to a devtools socket
  */
-function connect() {
+function connect(host) {
+  var host = host || 'localhost';
+
   // find a project where the port is currentPort
   var exists = _.find(projects, function (project) {
     return project.port === currentPort;
@@ -134,7 +137,7 @@ function connect() {
 
   // if no project on that port
   if (!exists) {
-    var socketAddr = 'ws://localhost:' + currentPort;
+    var socketAddr = 'ws://' + host + ':' + currentPort;
 
     var socket = new WebSocket(socketAddr, 'echo-protocol');
     socket.onopen = handleSocketOpen;
@@ -405,6 +408,12 @@ $tasks.on('click', '.bgTask', function () {
   updateTaskList();
   currentProject.running = false;
   enableActivity();
+});
+
+// change host
+$settings.on('click', 'button[value="connect"]', function () {
+  var host = $('#settings input[name="host"]').val();
+  connect(host);
 });
 
 // switch projects
